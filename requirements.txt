@@ -1,0 +1,5 @@
+# Kodi xbmc stubs for Kodi 18.x
+Kodistubs==18.0.0
+
+# Other info to: https://pypi.org/project/Kodistubs/#description
+#   https://github.com/romanvm/Kodistubs
