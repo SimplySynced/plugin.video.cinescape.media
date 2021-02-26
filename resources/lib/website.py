@@ -8,7 +8,6 @@ import requests
 ENDPOINT_CINESCAPE = 'https://cinescape.media/wp-json/tv/roku/'
 # ^^^^ uppercase variable are always simple CONSTANTS! do not use like any other variable
 
-
 def get_cinescape_data():
     """Get feed from Cinescape"""
     try:

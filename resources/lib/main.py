@@ -86,6 +86,19 @@ class Directory(object):
 
         return sc
 
+    def count_totalepisodes(self, shownum):
+        """
+        Get a count of a shows total episodes
+        """
+        data = website.get_cinescape_data()
+
+        te = 0
+
+        for season in data['series'][shownum]['seasons']:
+            te += len(season['episodes'])
+
+        return te
+
     def get_seasons(self, shownum):
         """
         Get all the seasons for the choosen show.
@@ -95,6 +108,16 @@ class Directory(object):
         #xbmc.log(seasons)
 
         return seasons
+
+    def count_episodes(self, shownum,seasonnum):
+        """
+        Get a count of the seasons episodes
+        """
+        data = website.get_cinescape_data()
+
+        ec = len(map(lambda value: value['title'], data['series'][shownum]['seasons'][seasonnum]['episodes']))
+
+        return ec
 
     def get_episodes(self, shownum,seasonnum):
         """
@@ -119,8 +142,10 @@ class Directory(object):
         # Start JSON Counter
         i = 0
         for show in shows:
-            # Get count of season for show
+            # Get count of seasons for show
             seasoncount = self.count_seasons(i)
+            # Get count of total episodes
+            totalepisodes = self.count_totalepisodes(i)
             # Create a list item with a text label and a thumbnail image.
             list_item = xbmcgui.ListItem(label=show, offscreen=True)
             # Set graphics (thumbnail, fanart, banner, poster, landscape etc.) for the list item.
@@ -136,7 +161,7 @@ class Directory(object):
                                         'studio': data['providerName'],
                                         'tvshowtitle': show,
                                         'season': seasoncount,
-                                        'episode': '10'})
+                                        'episode': totalepisodes})
             # Set Seasons Property
             # list_item.setProperty('TotalSeasons','3')
             # Create a URL for a plugin recursive call.
@@ -166,7 +191,10 @@ class Directory(object):
         seasons = self.get_seasons(shownum)
         # Start JSON Counter
         i = 0
+        list_items = []
         for season in seasons:
+            # Get a count of the seasons Episodes
+            episodecount = self.count_episodes(shownum,i)
             # Create a list item with a text label and a thumbnail image.
             season = 'Season '+ str(season)
             list_item = xbmcgui.ListItem(label=season, offscreen=True)
@@ -183,18 +211,19 @@ class Directory(object):
                                         'studio': data['providerName'],
                                         'season': data['series'][shownum]['seasons'][i]['seasonNumber'],
                                         'sortseason': data['series'][shownum]['seasons'][i]['seasonNumber'],
-                                        'episode': '12',
+                                        'episode': episodecount,
                                         'mpaa': 'R'})
             # Create a URL for a plugin recursive call.
             url = self.get_url(action='getEpisodes', seasonnum=i, shownum=shownum)
             # is_folder = True means that this item opens a sub-list of lower level items.
             is_folder = True
-            # log
-            # xbmc.log(str(data['series'][shownum]['seasons'][i]['seasonNumber']))
             # Add our item to the Kodi virtual folder listing.
-            xbmcplugin.addDirectoryItem(self._handle, url, list_item, is_folder)
+            list_items.append((url, list_item, is_folder))
+            #xbmcplugin.addDirectoryItem(self._handle, url, list_item, is_folder)
             # Add 1 to counter
             i = i + 1
+        # Add all our items to the Kodi virtual folder listing
+        xbmcplugin.addDirectoryItems(self._handle, list_items)
         # Add a sort method for the virtual folder items (alphabetically, ignore articles)
         xbmcplugin.addSortMethod(self._handle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
         # Finish creating a virtual folder.
