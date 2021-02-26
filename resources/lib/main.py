@@ -22,7 +22,7 @@ def run_addon(argv):
     except Exception as exc:
         # todo show possible errors as message to the user and print to kodi log details...
         xbmc.log(str(exc), xbmc.LOGERROR)
-        # let know to kodi that the operation has failed
+        # Tell Kodi we have failed to load after loading has failed.
         xbmcplugin.endOfDirectory(handle=int(argv[1]), succeeded=False)
 
 
@@ -151,7 +151,8 @@ class Directory(object):
             # Set graphics (thumbnail, fanart, banner, poster, landscape etc.) for the list item.
             list_item.setArt({'thumb': data['series'][i]['thumbnail'],
                               'icon': data['series'][i]['thumbnail'],
-                              'fanart': data['series'][i]['thumbnail']})
+                              'fanart': data['series'][i]['thumbnail'],
+                              'poster': data['series'][i]['poster']})
             # Set additional info for the list item.
             list_item.setInfo('video', {'mediatype': 'tvshow',
                                         'title': show,

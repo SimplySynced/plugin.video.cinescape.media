@@ -15,4 +15,5 @@ def get_cinescape_data():
         return json.loads(html.content)
     except Exception:
         # ..todo print to Kodi log what happened and/or warning the user with a message
+
         raise  # <<< pass the error to the caller code
